@@ -1,0 +1,66 @@
+version: "2.0"
+services:
+
+  etcd:
+    image: "kubernetes/etcd"
+    network_mode: "bridge"
+    ports:
+      - "4001"
+      - "7001"
+    environment:
+      SERVICE_4001_NAME: etcd
+
+  docker-register:
+    image: jwilder/docker-register
+    links:
+      - "etcd"
+    network_mode: "bridge"
+    command: [ ]
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    environment:
+       - ETCD_HOST=etcd:4001
+       - HOST_IP
+    depends_on:
+      - etcd
+
+  docker-discover:
+    image: jwilder/docker-discover
+    network_mode: "bridge"
+    links:
+      - "etcd"
+    command: [ ]
+    ports:
+      - "80:80"
+      - "1936:1936"
+    environment:
+       - ETCD_HOST=etcd:4001
+    depends_on:
+      - etcd
+
+  weatherchk1:
+    image: caoihmin/weatherchk:latest
+    network_mode: "bridge"
+    ports:
+      - "80"
+    depends_on:
+      - etcd
+      - docker-register
+
+  weatherchk2:
+    image: caoihmin/weatherchk:latest
+    network_mode: "bridge"
+    ports:
+      - "80"
+    depends_on:
+      - etcd
+      - docker-register
+
+  weatherchk3:
+    image: caoihmin/weatherchk:latest
+    network_mode: "bridge"
+    ports:
+      - "80"
+    depends_on:
+      - etcd
+      - docker-register
