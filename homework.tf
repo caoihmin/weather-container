@@ -12,7 +12,7 @@ resource "google_compute_instance" "weatherchk" {
   count        = 1 // Adjust as desired
   name         = "weatherchk${count.index + 1}" // yields "weatherchk1", "weatherchk2", etc. It's also the machine's name and hostname
   machine_type = "f1-micro" // smallest (CPU &amp; RAM) available instance
-  erverone         = "${var.region}" // yields "europe-west1-d" as setup previously. Places your VM in Europe
+  zone         = "${var.region}" // yields "europe-west1-d" as setup previously. Places your VM in Europe
   tags = ["http-server"]
 
   disk {
