@@ -13,6 +13,7 @@ resource "google_compute_instance" "weatherchk" {
   name         = "weatherchk${count.index + 1}" // yields "weatherchk1", "weatherchk2", etc. It's also the machine's name and hostname
   machine_type = "f1-micro" // smallest (CPU &amp; RAM) available instance
   zone         = "${var.region}" // yields "europe-west1-d" as setup previously. Places your VM in Europe
+  tags = [www-mode"]
 
   disk {
     image = "ubuntu-1604-xenial-v20170721" // the operative system (and Linux flavour) that your machine will run
@@ -25,4 +26,15 @@ resource "google_compute_instance" "weatherchk" {
     }
   }
 }
+resource "google_compute_firewall" "www" {
+  name = "weatherchk-www-firewall"
+  network = "default"
 
+  allow {
+    protocol = "tcp"
+    ports = ["80", "443"]
+  }
+
+  source_ranges = ["0.0.0.0/0"]
+  target_tags = ["www-node"]
+}
